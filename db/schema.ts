@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   decimal,
   integer,
@@ -12,7 +13,7 @@ const timestamps = {
   updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
 };
 
-export const bucket = pgTable("buckets", {
+export const buckets = pgTable("buckets", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   userId: varchar("user_id", { length: 255 }).notNull(),
   name: varchar({ length: 255 }).notNull(),
@@ -21,12 +22,19 @@ export const bucket = pgTable("buckets", {
   ...timestamps,
 });
 
-export const transaction = pgTable("transactions", {
+export const transactions = pgTable("transactions", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   bucketId: integer("bucket_id")
-    .references(() => bucket.id)
+    .references(() => buckets.id)
     .notNull(),
   description: text(),
   amount: decimal("amount", { precision: 9, scale: 2 }).notNull(),
   ...timestamps,
 });
+
+export const transactionsRelations = relations(transactions, ({ one }) => ({
+  bucket: one(buckets, {
+    fields: [transactions.bucketId],
+    references: [buckets.id],
+  }),
+}));

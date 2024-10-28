@@ -6,8 +6,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Main from "@/components/ui/main";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { db } from "@/db";
-import { currencyFormatter, truncateString } from "@/lib/utils";
+import {
+  currencyFormatter,
+  formatDateToRelative,
+  truncateString,
+} from "@/lib/utils";
 import { currentUser } from "@clerk/nextjs/server";
 import { Plus } from "lucide-react";
 import Link from "next/link";
@@ -16,14 +28,29 @@ export default async function Page() {
   const authedUser = await currentUser();
   if (!authedUser) return;
 
-  const buckets = await db.query.bucket.findMany({
-    where: (bucket, { eq }) => eq(bucket.userId, authedUser.id),
-    orderBy: (bucket, { desc }) => [desc(bucket.totalAmount)],
+  const buckets = await db.query.buckets.findMany({
+    columns: {
+      createdAt: false,
+      updatedAt: false,
+      userId: false,
+    },
+    where: (buckets, { eq }) => eq(buckets.userId, authedUser.id),
+    orderBy: (buckets, { desc }) => [desc(buckets.totalAmount)],
   });
 
-  const transactions = await db.query.transaction.findMany({
+  const transactions = await db.query.transactions.findMany({
+    columns: {
+      updatedAt: false,
+    },
     // @todo: add where clause
-    orderBy: (transaction, { desc }) => [desc(transaction.createdAt)],
+    orderBy: (transactions, { desc }) => [desc(transactions.createdAt)],
+    with: {
+      bucket: {
+        columns: {
+          name: true,
+        },
+      },
+    },
   });
 
   return (
@@ -55,9 +82,32 @@ export default async function Page() {
       </section>
       <section className="grid gap-y-2">
         <h2 className="text-xl font-bold">Recent Transactions</h2>
-        {transactions.map((transaction) => (
-          <pre key={transaction.id}>{JSON.stringify(transaction, null, 2)}</pre>
-        ))}
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Description</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Bucket</TableHead>
+              <TableHead>Created</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {transactions.map((transaction) => (
+              <TableRow key={transaction.id}>
+                <TableCell>{transaction.id}</TableCell>
+                <TableCell className="whitespace-nowrap">
+                  {transaction.description}
+                </TableCell>
+                <TableCell>{transaction.amount}</TableCell>
+                <TableCell className="font-medium">
+                  {transaction.bucket.name}
+                </TableCell>
+                <TableCell>{transaction.createdAt.toLocaleString()}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </section>
     </Main>
   );
