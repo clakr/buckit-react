@@ -1,22 +1,27 @@
 import {
   decimal,
+  integer,
   pgTable,
-  serial,
   text,
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+import { createInsertSchema, createSelectSchema } from "drizzle-valibot";
 
 const timestamps = {
-  created_at: timestamp().defaultNow().notNull(),
-  updated_at: timestamp().$onUpdate(() => new Date()),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
 };
 
 export const buckets = pgTable("buckets", {
-  id: serial().primaryKey(),
-  user_id: varchar({ length: 255 }).notNull(),
+  // id: serial().primaryKey(),
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  userId: varchar("user_id", { length: 255 }).notNull(),
   name: varchar({ length: 255 }).notNull(),
   description: text(),
-  total_amount: decimal({ precision: 9, scale: 2 }).notNull(),
+  totalAmount: decimal("total_amount", { precision: 9, scale: 2 }).notNull(),
   ...timestamps,
 });
+
+export const insertBucketSchema = createInsertSchema(buckets);
+export const selectBucketSchema = createSelectSchema(buckets);
