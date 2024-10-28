@@ -7,7 +7,7 @@ export default function Layout({ children }: PropsWithChildren) {
   return (
     <>
       <Navbar />
-      {children}
+      <main className="mx-auto max-w-screen-lg p-4">{children}</main>
     </>
   );
 }
@@ -17,7 +17,7 @@ function Navbar() {
     <nav className="border-b">
       <div className="mx-auto flex max-w-screen-lg items-center justify-between px-4 py-3">
         <section>
-          <Button variant="link" className="h-[unset] p-0">
+          <Button variant="link" className="h-[unset] p-0" asChild>
             <Link href="/dashboard">Dashboard</Link>
           </Button>
         </section>
