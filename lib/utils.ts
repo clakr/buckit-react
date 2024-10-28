@@ -14,3 +14,8 @@ export function truncateString(str: string, maxLength: number = 100): string {
 
   return str.slice(0, truncationLength) + ELLIPSIS;
 }
+
+export const currencyFormatter = Intl.NumberFormat("en-PH", {
+  style: "currency",
+  currency: "PHP",
+});
