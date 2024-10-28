@@ -7,7 +7,7 @@ export default function Layout({ children }: PropsWithChildren) {
   return (
     <>
       <Navbar />
-      <main className="mx-auto max-w-screen-lg p-4">{children}</main>
+      {children}
     </>
   );
 }

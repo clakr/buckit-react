@@ -5,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Main from "@/components/ui/main";
 import { db } from "@/db";
 import { currencyFormatter, truncateString } from "@/lib/utils";
 import { currentUser } from "@clerk/nextjs/server";
@@ -26,7 +27,7 @@ export default async function Page() {
   });
 
   return (
-    <>
+    <Main className="grid gap-y-8">
       <section className="grid gap-y-2">
         <h2 className="text-xl font-bold">Buckets</h2>
         <div className="grid auto-rows-fr grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4">
@@ -58,6 +59,6 @@ export default async function Page() {
           <pre key={transaction.id}>{JSON.stringify(transaction, null, 2)}</pre>
         ))}
       </section>
-    </>
+    </Main>
   );
 }
