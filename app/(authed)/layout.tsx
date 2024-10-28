@@ -18,7 +18,7 @@ function Navbar() {
       <div className="mx-auto flex max-w-screen-lg items-center justify-between px-4 py-3">
         <section>
           <Button variant="link" className="h-[unset] p-0" asChild>
-            <Link href="/dashboard">Dashboard</Link>
+            <Link href="/">Dashboard</Link>
           </Button>
         </section>
         <section className="grid place-content-center">

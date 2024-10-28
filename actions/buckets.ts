@@ -25,5 +25,5 @@ export async function createBucket(formData: FormData) {
     });
   }
 
-  redirect("/dashboard");
+  redirect("/");
 }
