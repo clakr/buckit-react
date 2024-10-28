@@ -1,8 +1,8 @@
+import { createBucket } from "@/actions/buckets";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { createBucket } from "@/db/buckets/actions";
 import { currentUser } from "@clerk/nextjs/server";
 import Form from "next/form";
 
@@ -27,7 +27,14 @@ export default async function Page() {
         </div>
         <div className="grid gap-y-2">
           <Label htmlFor="totalAmount">Total Amount</Label>
-          <Input id="totalAmount" name="totalAmount" type="number" required />
+          <Input
+            id="totalAmount"
+            name="totalAmount"
+            type="number"
+            min="0"
+            step="0.01"
+            required
+          />
         </div>
         <Button type="submit">Create Bucket</Button>
       </Form>

@@ -1,9 +1,8 @@
 "use server";
 
-import { db } from "..";
-import { buckets, insertBucketSchema } from "../schema";
+import { db } from "@/db";
+import { buckets } from "@/db/schema";
 import { redirect } from "next/navigation";
-import { parse } from "valibot";
 
 export async function createBucket(formData: FormData) {
   await db.insert(buckets).values({

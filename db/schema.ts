@@ -6,7 +6,6 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
-import { createInsertSchema, createSelectSchema } from "drizzle-valibot";
 
 const timestamps = {
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -22,6 +21,3 @@ export const buckets = pgTable("buckets", {
   totalAmount: decimal("total_amount", { precision: 9, scale: 2 }).notNull(),
   ...timestamps,
 });
-
-export const insertBucketSchema = createInsertSchema(buckets);
-export const selectBucketSchema = createSelectSchema(buckets);
