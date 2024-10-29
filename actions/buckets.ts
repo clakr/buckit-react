@@ -48,3 +48,11 @@ export async function editBucket(formData: FormData) {
 
   redirect(`/buckets/${bucketId}`);
 }
+
+export async function deleteBucket(formData: FormData) {
+  await db
+    .delete(buckets)
+    .where(eq(buckets.id, +(formData.get("bucketId")?.toString() ?? "")));
+
+  redirect("/");
+}

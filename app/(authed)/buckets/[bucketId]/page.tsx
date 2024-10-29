@@ -40,13 +40,13 @@ async function Content({ params }) {
 
   return (
     <>
-      <BucketForm bucket={bucket} />
-      <TransactionsTable transactions={bucket.transactions} />
+      <EditBucketForm bucket={bucket} />
+      <BucketTransactionsTable transactions={bucket.transactions} />
     </>
   );
 }
 
-function BucketForm({ bucket }: { bucket: Bucket }) {
+function EditBucketForm({ bucket }: { bucket: Bucket }) {
   return (
     <section className="grid gap-y-4">
       <h2 className="text-xl font-bold">Bucket #{bucket.id}</h2>
@@ -93,7 +93,11 @@ function BucketForm({ bucket }: { bucket: Bucket }) {
   );
 }
 
-function TransactionsTable({ transactions }: { transactions: Transaction[] }) {
+function BucketTransactionsTable({
+  transactions,
+}: {
+  transactions: Transaction[];
+}) {
   return (
     <section className="grid gap-y-4">
       <h3 className="text-lg font-bold">Transactions</h3>

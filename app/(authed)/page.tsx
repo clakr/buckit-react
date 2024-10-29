@@ -1,3 +1,4 @@
+import { BucketDropdownMenu } from "@/components/bucket-dropdown-menu";
 import {
   Card,
   CardDescription,
@@ -5,12 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import Main from "@/components/ui/main";
 import {
   Table,
@@ -23,45 +18,27 @@ import {
 import { db } from "@/db";
 import { currencyFormatter, truncateString } from "@/lib/utils";
 import { currentUser } from "@clerk/nextjs/server";
-import { Plus, EllipsisVertical, Trash, Eye } from "lucide-react";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
 export default async function Page() {
   return (
     <Main className="grid gap-y-8">
-      <section className="grid gap-y-2">
-        <h2 className="text-xl font-bold">Buckets</h2>
-        <Suspense fallback={<p>loading...</p>}>
-          <BucketList />
-        </Suspense>
-      </section>
-      <section className="grid gap-y-2">
-        <h2 className="text-xl font-bold">Recent Transactions</h2>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Bucket</TableHead>
-              <TableHead>Created</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <Suspense
-              fallback={
-                <TableRow>
-                  <TableCell colSpan={5}>loading...</TableCell>
-                </TableRow>
-              }
-            >
-              <TransactionList />
-            </Suspense>
-          </TableBody>
-        </Table>
-      </section>
+      <BucketsSection />
+      <TransactionsSection />
     </Main>
+  );
+}
+
+function BucketsSection() {
+  return (
+    <section className="grid gap-y-2">
+      <h2 className="text-xl font-bold">Buckets</h2>
+      <Suspense fallback={<p>loading...</p>}>
+        <BucketList />
+      </Suspense>
+    </section>
   );
 }
 
@@ -86,24 +63,7 @@ async function BucketList() {
           key={bucket.id}
           className="relative isolate flex flex-col justify-between"
         >
-          <DropdownMenu>
-            <DropdownMenuTrigger className="absolute right-2 top-2 rounded-full p-2">
-              <span className="sr-only">Open Menu</span>
-              <EllipsisVertical className="size-4" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem asChild>
-                <Link href={`/buckets/${bucket.id}`}>
-                  <Eye />
-                  View
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled>
-                <Trash />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <BucketDropdownMenu bucketId={bucket.id} />
           <CardHeader>
             <CardTitle>{truncateString(bucket.name)}</CardTitle>
             <CardDescription>
@@ -121,6 +81,36 @@ async function BucketList() {
         </Card>
       </Link>
     </div>
+  );
+}
+
+function TransactionsSection() {
+  return (
+    <section className="grid gap-y-2">
+      <h2 className="text-xl font-bold">Recent Transactions</h2>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>ID</TableHead>
+            <TableHead>Description</TableHead>
+            <TableHead>Amount</TableHead>
+            <TableHead>Bucket</TableHead>
+            <TableHead>Created</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <Suspense
+            fallback={
+              <TableRow>
+                <TableCell colSpan={5}>loading...</TableCell>
+              </TableRow>
+            }
+          >
+            <TransactionList />
+          </Suspense>
+        </TableBody>
+      </Table>
+    </section>
   );
 }
 

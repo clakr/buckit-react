@@ -31,7 +31,7 @@ export const bucketsRelations = relations(buckets, ({ many }) => ({
 export const transactions = pgTable("transactions", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   bucketId: integer("bucket_id")
-    .references(() => buckets.id)
+    .references(() => buckets.id, { onDelete: "cascade" })
     .notNull(),
   description: text(),
   amount: decimal("amount", { precision: 9, scale: 2 }).notNull(),
