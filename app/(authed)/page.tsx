@@ -26,9 +26,7 @@ import { Suspense } from "react";
 export default async function Page() {
   return (
     <Main className="grid gap-y-8">
-      <Suspense fallback={<p>loading...</p>}>
-        <MainContent />
-      </Suspense>
+      <MainContent />
     </Main>
   );
 }
