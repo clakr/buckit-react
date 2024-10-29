@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { InferSelectModel, relations } from "drizzle-orm";
 import {
   decimal,
   integer,
@@ -22,6 +22,8 @@ export const buckets = pgTable("buckets", {
   ...timestamps,
 });
 
+export type Bucket = InferSelectModel<typeof buckets>;
+
 export const bucketsRelations = relations(buckets, ({ many }) => ({
   transactions: many(transactions),
 }));
@@ -35,6 +37,8 @@ export const transactions = pgTable("transactions", {
   amount: decimal("amount", { precision: 9, scale: 2 }).notNull(),
   ...timestamps,
 });
+
+export type Transaction = InferSelectModel<typeof transactions>;
 
 export const transactionsRelations = relations(transactions, ({ one }) => ({
   bucket: one(buckets, {
