@@ -139,7 +139,6 @@ function TransactionsTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>ID</TableHead>
             <TableHead>Description</TableHead>
             <TableHead>Amount</TableHead>
             <TableHead>Bucket</TableHead>
@@ -157,7 +156,6 @@ function TransactionsTable({
             {transactions.length > 0 ? (
               transactions.map((transaction) => (
                 <TableRow key={transaction.id}>
-                  <TableCell>{transaction.id}</TableCell>
                   <TableCell className="whitespace-nowrap">
                     {transaction.description}
                   </TableCell>

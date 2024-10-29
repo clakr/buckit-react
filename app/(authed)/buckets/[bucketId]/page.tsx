@@ -1,4 +1,5 @@
 import { editBucket } from "@/actions/buckets";
+import { createTransaction } from "@/actions/transactions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,7 +34,9 @@ async function Content({ params }) {
   const bucket = await db.query.buckets.findFirst({
     where: (buckets, { eq }) => eq(buckets.id, +bucketId),
     with: {
-      transactions: true,
+      transactions: {
+        orderBy: (buckets, { desc }) => [desc(buckets.createdAt)],
+      },
     },
   });
   if (!bucket) return;
@@ -41,7 +44,11 @@ async function Content({ params }) {
   return (
     <>
       <EditBucketForm bucket={bucket} />
-      <BucketTransactionsTable transactions={bucket.transactions} />
+      <section className="grid gap-y-4">
+        <h3 className="text-lg font-bold">Transactions</h3>
+        <AddTransactionForm bucketId={bucketId} />
+        <BucketTransactionsTable transactions={bucket.transactions} />
+      </section>
     </>
   );
 }
@@ -93,44 +100,70 @@ function EditBucketForm({ bucket }: { bucket: Bucket }) {
   );
 }
 
+function AddTransactionForm({ bucketId }: { bucketId: Bucket["id"] }) {
+  return (
+    <Form action={createTransaction} className="grid gap-y-4">
+      <input type="hidden" name="bucketId" value={bucketId} />
+      <div className="grid gap-y-2">
+        <Label htmlFor="transaction_description">Description</Label>
+        <Input
+          id="transaction_description"
+          name="description"
+          type="text"
+          required
+        />
+      </div>
+      <div className="grid gap-y-2">
+        <Label htmlFor="amount">Amount</Label>
+        <Input
+          id="amount"
+          name="amount"
+          type="number"
+          min="0.01"
+          step="0.01"
+          required
+        />
+      </div>
+      <Button type="submit" className="justify-self-end">
+        Add Transaction
+      </Button>
+    </Form>
+  );
+}
+
 function BucketTransactionsTable({
   transactions,
 }: {
   transactions: Transaction[];
 }) {
   return (
-    <section className="grid gap-y-4">
-      <h3 className="text-lg font-bold">Transactions</h3>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead>Amount</TableHead>
-            <TableHead>Created</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {transactions.length > 0 ? (
-            transactions.map((transaction) => (
-              <TableRow key={transaction.id}>
-                <TableCell>{transaction.id}</TableCell>
-                <TableCell className="whitespace-nowrap">
-                  {transaction.description}
-                </TableCell>
-                <TableCell>{transaction.amount}</TableCell>
-                <TableCell>{transaction.createdAt.toLocaleString()}</TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={4} className="text-center">
-                No transactions yet.
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Description</TableHead>
+          <TableHead>Amount</TableHead>
+          <TableHead>Created</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {transactions.length > 0 ? (
+          transactions.map((transaction) => (
+            <TableRow key={transaction.id}>
+              <TableCell className="whitespace-nowrap">
+                {transaction.description}
               </TableCell>
+              <TableCell>{transaction.amount}</TableCell>
+              <TableCell>{transaction.createdAt.toLocaleString()}</TableCell>
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </section>
+          ))
+        ) : (
+          <TableRow>
+            <TableCell colSpan={4} className="text-center">
+              No transactions yet.
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
   );
 }
