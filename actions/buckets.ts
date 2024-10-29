@@ -2,10 +2,14 @@
 
 import { db } from "@/db";
 import { buckets, transactions } from "@/db/schema";
+import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
 export async function createBucket(formData: FormData) {
+  const authedUser = await currentUser();
+  if (!authedUser) throw new Error("No authedUser");
+
   const totalAmount = formData.get("totalAmount")?.toString() ?? "0";
 
   const [createdBucket] = await db
@@ -14,7 +18,7 @@ export async function createBucket(formData: FormData) {
       name: formData.get("name")?.toString() ?? "NO NAME VALUE",
       description: formData.get("description")?.toString(),
       totalAmount,
-      userId: formData.get("userId")?.toString() ?? "NO USERID VALUE",
+      userId: authedUser.id,
     })
     .returning({ id: buckets.id });
 
