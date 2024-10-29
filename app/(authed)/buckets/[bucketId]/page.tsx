@@ -18,7 +18,9 @@ import { Bucket, Transaction } from "@/db/schema";
 import Form from "next/form";
 import { Suspense } from "react";
 
-export default async function Page({ params }) {
+type Params = Promise<{ bucketId: string }>;
+
+export default async function Page({ params }: { params: Params }) {
   return (
     <Main>
       <Suspense fallback={<p>loading...</p>}>
@@ -28,7 +30,7 @@ export default async function Page({ params }) {
   );
 }
 
-async function Content({ params }) {
+async function Content({ params }: { params: Params }) {
   const { bucketId } = await params;
 
   const bucket = await db.query.buckets.findFirst({
@@ -46,7 +48,7 @@ async function Content({ params }) {
       <EditBucketForm bucket={bucket} />
       <section className="grid gap-y-4">
         <h3 className="text-lg font-bold">Transactions</h3>
-        <AddTransactionForm bucketId={bucketId} />
+        <AddTransactionForm bucketId={+bucketId} />
         <BucketTransactionsTable transactions={bucket.transactions} />
       </section>
     </>
@@ -57,7 +59,7 @@ function EditBucketForm({ bucket }: { bucket: Bucket }) {
   return (
     <section className="grid gap-y-4">
       <h2 className="text-xl font-bold">Bucket #{bucket.id}</h2>
-      <Form className="grid gap-y-4" action={editBucket}>
+      <Form className="grid gap-4 sm:grid-cols-[1fr_200px]" action={editBucket}>
         <input type="hidden" name="id" value={bucket.id} />
         <div className="grid gap-y-2">
           <Label htmlFor="name">Name</Label>
@@ -67,17 +69,6 @@ function EditBucketForm({ bucket }: { bucket: Bucket }) {
             type="text"
             defaultValue={bucket.name}
             required
-          />
-        </div>
-        <div className="grid gap-y-2">
-          <Label htmlFor="description">
-            Description <small>(optional)</small>
-          </Label>
-          <Textarea
-            id="description"
-            name="description"
-            rows={5}
-            defaultValue={bucket.description ?? ""}
           />
         </div>
         <div className="grid gap-y-2">
@@ -92,7 +83,19 @@ function EditBucketForm({ bucket }: { bucket: Bucket }) {
             required
           />
         </div>
-        <Button type="submit" className="justify-self-end">
+        <div className="grid gap-y-2 sm:col-span-2">
+          <Label htmlFor="description">
+            Description <small>(optional)</small>
+          </Label>
+          <Textarea
+            id="description"
+            name="description"
+            rows={5}
+            defaultValue={bucket.description ?? ""}
+          />
+        </div>
+
+        <Button type="submit" className="justify-self-end sm:col-span-2">
           Edit Bucket
         </Button>
       </Form>
@@ -102,7 +105,10 @@ function EditBucketForm({ bucket }: { bucket: Bucket }) {
 
 function AddTransactionForm({ bucketId }: { bucketId: Bucket["id"] }) {
   return (
-    <Form action={createTransaction} className="grid gap-y-4">
+    <Form
+      action={createTransaction}
+      className="grid gap-4 sm:grid-cols-[2fr_1fr_150px]"
+    >
       <input type="hidden" name="bucketId" value={bucketId} />
       <div className="grid gap-y-2">
         <Label htmlFor="transaction_description">Description</Label>
@@ -124,7 +130,7 @@ function AddTransactionForm({ bucketId }: { bucketId: Bucket["id"] }) {
           required
         />
       </div>
-      <Button type="submit" className="justify-self-end">
+      <Button type="submit" className="self-end">
         Add Transaction
       </Button>
     </Form>

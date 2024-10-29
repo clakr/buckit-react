@@ -119,7 +119,7 @@ function BucketList({
           </Card>
         ))}
         <Link href="/buckets/create">
-          <Card className="grid h-full place-content-center hover:bg-primary/5">
+          <Card className="grid h-full place-content-center py-4 hover:bg-primary/5">
             <Plus className="size-20" />
           </Card>
         </Link>
@@ -160,7 +160,7 @@ function TransactionsTable({
                     {transaction.description}
                   </TableCell>
                   <TableCell>{transaction.amount}</TableCell>
-                  <TableCell className="font-medium">
+                  <TableCell className="whitespace-nowrap font-medium">
                     {transaction.bucket.name}
                   </TableCell>
                   <TableCell>
