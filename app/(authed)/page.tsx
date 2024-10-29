@@ -5,6 +5,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import Main from "@/components/ui/main";
 import {
   Table,
@@ -15,13 +21,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { db } from "@/db";
-import {
-  currencyFormatter,
-  formatDateToRelative,
-  truncateString,
-} from "@/lib/utils";
+import { currencyFormatter, truncateString } from "@/lib/utils";
 import { currentUser } from "@clerk/nextjs/server";
-import { Plus } from "lucide-react";
+import { Plus, EllipsisVertical, Trash, Eye } from "lucide-react";
 import Link from "next/link";
 
 export default async function Page() {
@@ -59,7 +61,28 @@ export default async function Page() {
         <h2 className="text-xl font-bold">Buckets</h2>
         <div className="grid auto-rows-fr grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4">
           {buckets.map((bucket) => (
-            <Card key={bucket.id} className="flex flex-col justify-between">
+            <Card
+              key={bucket.id}
+              className="relative isolate flex flex-col justify-between"
+            >
+              <DropdownMenu>
+                <DropdownMenuTrigger className="absolute right-2 top-2 rounded-full p-2">
+                  <span className="sr-only">Open Menu</span>
+                  <EllipsisVertical className="size-4" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem asChild>
+                    <Link href={`/buckets/${bucket.id}`}>
+                      <Eye />
+                      View
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem disabled>
+                    <Trash />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <CardHeader>
                 <CardTitle>{truncateString(bucket.name)}</CardTitle>
                 <CardDescription>

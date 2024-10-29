@@ -38,7 +38,9 @@ export default async function Page() {
               required
             />
           </div>
-          <Button type="submit">Create Bucket</Button>
+          <Button type="submit" className="justify-self-end">
+            Create Bucket
+          </Button>
         </Form>
       </section>
     </Main>

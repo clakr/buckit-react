@@ -22,6 +22,10 @@ export const buckets = pgTable("buckets", {
   ...timestamps,
 });
 
+export const bucketsRelations = relations(buckets, ({ many }) => ({
+  transactions: many(transactions),
+}));
+
 export const transactions = pgTable("transactions", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   bucketId: integer("bucket_id")
