@@ -1,9 +1,10 @@
 import { createTransaction } from "@/actions/transactions";
-import { CreateEditBucketForm } from "@/components/create-bucket-form";
+import { CreateEditBucketForm } from "@/components/create-edit-bucket-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Main from "@/components/ui/main";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Table,
   TableBody,
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/table";
 import { db } from "@/db";
 import { Bucket, Transaction } from "@/db/schema";
+import { currencyFormatter } from "@/lib/utils";
 import Form from "next/form";
 
 type Params = Promise<{ bucketId: string }>;
@@ -48,10 +50,7 @@ export default async function Page({ params }: { params: Params }) {
 
 function AddTransactionForm({ bucketId }: { bucketId: Bucket["id"] }) {
   return (
-    <Form
-      action={createTransaction}
-      className="grid gap-4 sm:grid-cols-[2fr_1fr_150px]"
-    >
+    <Form action={createTransaction} className="grid gap-4">
       <input type="hidden" name="bucketId" value={bucketId} />
       <div className="grid gap-y-2">
         <Label htmlFor="transaction_description">Description</Label>
@@ -72,6 +71,19 @@ function AddTransactionForm({ bucketId }: { bucketId: Bucket["id"] }) {
           step="0.01"
           required
         />
+      </div>
+      <div className="grid gap-y-4">
+        <Label>Transaction Type</Label>
+        <RadioGroup name="type" defaultValue="inbound">
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="inbound" id="inbound" />
+            <Label htmlFor="inbound">Inbound</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="outbound" id="outbound" />
+            <Label htmlFor="outbound">Outbound</Label>
+          </div>
+        </RadioGroup>
       </div>
       <Button type="submit" className="self-end">
         Add Transaction
@@ -101,7 +113,10 @@ function BucketTransactionsTable({
               <TableCell className="whitespace-nowrap">
                 {transaction.description}
               </TableCell>
-              <TableCell>{transaction.amount}</TableCell>
+              <TableCell className="font-bold">
+                {transaction.type === "inbound" ? "+" : "-"}{" "}
+                {currencyFormatter.format(+transaction.amount)}
+              </TableCell>
               <TableCell>{transaction.createdAt.toLocaleString()}</TableCell>
             </TableRow>
           ))

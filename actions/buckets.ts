@@ -27,6 +27,7 @@ export async function createBucket(formData: FormData) {
       bucketId: createdBucket.id,
       description: "Initial Bucket Value",
       amount: totalAmount,
+      type: "inbound",
     });
   }
 

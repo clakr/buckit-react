@@ -21,28 +21,6 @@ import { currencyFormatter, truncateString } from "@/lib/utils";
 import { currentUser, User } from "@clerk/nextjs/server";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { Suspense } from "react";
-
-export default async function Page() {
-  const authedUser = await currentUser();
-  if (!authedUser) return;
-
-  const { buckets, transactions } = await getData(authedUser.id);
-
-  return (
-    <Main className="grid gap-y-8">
-      <section className="grid gap-y-4">
-        <h2 className="text-xl font-bold">Buckets</h2>
-        <BucketList buckets={buckets} />
-      </section>
-
-      <section className="grid gap-y-4">
-        <h2 className="text-xl font-bold">Recent Transactions</h2>
-        <TransactionsTable transactions={transactions} />
-      </section>
-    </Main>
-  );
-}
 
 async function getData(userId: User["id"]) {
   const buckets = await db.query.buckets.findMany({
@@ -52,7 +30,7 @@ async function getData(userId: User["id"]) {
       userId: false,
     },
     where: (buckets, { eq }) => eq(buckets.userId, userId),
-    orderBy: (buckets, { desc }) => [desc(buckets.totalAmount)],
+    orderBy: (buckets, { desc }) => [desc(buckets.updatedAt)],
     with: {
       transactions: {
         columns: {
@@ -89,6 +67,27 @@ async function getData(userId: User["id"]) {
   return { buckets, transactions };
 }
 
+export default async function Page() {
+  const authedUser = await currentUser();
+  if (!authedUser) return;
+
+  const { buckets, transactions } = await getData(authedUser.id);
+
+  return (
+    <Main className="grid gap-y-8">
+      <section className="grid gap-y-4">
+        <h2 className="text-xl font-bold">Buckets</h2>
+        <BucketList buckets={buckets} />
+      </section>
+
+      <section className="grid gap-y-4">
+        <h2 className="text-xl font-bold">Recent Transactions</h2>
+        <TransactionsTable transactions={transactions} />
+      </section>
+    </Main>
+  );
+}
+
 function BucketList({
   buckets,
 }: {
@@ -103,7 +102,9 @@ function BucketList({
         >
           <BucketDropdownMenu bucketId={bucket.id} />
           <CardHeader>
-            <CardTitle>{truncateString(bucket.name)}</CardTitle>
+            <CardTitle className="uppercase">
+              {truncateString(bucket.name)}
+            </CardTitle>
             <CardDescription>
               {bucket.description ? truncateString(bucket.description) : null}
             </CardDescription>
@@ -138,34 +139,29 @@ function TransactionsTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        <Suspense
-          fallback={
-            <TableRow>
-              <TableCell colSpan={5}>loading...</TableCell>
-            </TableRow>
-          }
-        >
-          {transactions.length > 0 ? (
-            transactions.map((transaction) => (
-              <TableRow key={transaction.id}>
-                <TableCell className="whitespace-nowrap">
-                  {transaction.description}
-                </TableCell>
-                <TableCell>{transaction.amount}</TableCell>
-                <TableCell className="whitespace-nowrap font-medium">
-                  {transaction.bucket.name}
-                </TableCell>
-                <TableCell>{transaction.createdAt.toLocaleString()}</TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={4} className="text-center">
-                No transactions yet.
+        {transactions.length > 0 ? (
+          transactions.map((transaction) => (
+            <TableRow key={transaction.id}>
+              <TableCell className="whitespace-nowrap">
+                {transaction.description}
               </TableCell>
+              <TableCell className="font-bold">
+                {transaction.type === "inbound" ? "+" : "-"}{" "}
+                {currencyFormatter.format(+transaction.amount)}
+              </TableCell>
+              <TableCell className="whitespace-nowrap font-medium">
+                {transaction.bucket.name}
+              </TableCell>
+              <TableCell>{transaction.createdAt.toLocaleString()}</TableCell>
             </TableRow>
-          )}
-        </Suspense>
+          ))
+        ) : (
+          <TableRow>
+            <TableCell colSpan={4} className="text-center">
+              No transactions yet.
+            </TableCell>
+          </TableRow>
+        )}
       </TableBody>
     </Table>
   );

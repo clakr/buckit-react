@@ -1,4 +1,4 @@
-import { CreateEditBucketForm } from "@/components/create-bucket-form";
+import { CreateEditBucketForm } from "@/components/create-edit-bucket-form";
 import Main from "@/components/ui/main";
 
 export default function Page() {
