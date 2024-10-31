@@ -169,7 +169,7 @@ function TransactionsTable({
           ))
         ) : (
           <TableRow>
-            <TableCell colSpan={4} className="text-center">
+            <TableCell colSpan={5} className="text-center">
               No transactions yet.
             </TableCell>
           </TableRow>
