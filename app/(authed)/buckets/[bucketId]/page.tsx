@@ -1,5 +1,5 @@
-import { editBucket } from "@/actions/buckets";
 import { createTransaction } from "@/actions/transactions";
+import { CreateEditBucketForm } from "@/components/create-bucket-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Textarea } from "@/components/ui/textarea";
 import { db } from "@/db";
 import { Bucket, Transaction } from "@/db/schema";
 import Form from "next/form";
@@ -36,7 +35,7 @@ export default async function Page({ params }: { params: Params }) {
     <Main className="grid gap-y-8">
       <section className="grid gap-y-4">
         <h2 className="text-xl font-bold">Bucket #{bucket.id}</h2>
-        <EditBucketForm bucket={bucket} />
+        <CreateEditBucketForm intent="edit" bucket={bucket} />
       </section>
       <section className="grid gap-y-4">
         <h3 className="text-lg font-bold">Transactions</h3>
@@ -44,51 +43,6 @@ export default async function Page({ params }: { params: Params }) {
         <BucketTransactionsTable transactions={bucket.transactions} />
       </section>
     </Main>
-  );
-}
-
-function EditBucketForm({ bucket }: { bucket: Bucket }) {
-  return (
-    <Form className="grid gap-4 sm:grid-cols-[1fr_200px]" action={editBucket}>
-      <input type="hidden" name="id" value={bucket.id} />
-      <div className="grid gap-y-2">
-        <Label htmlFor="name">Name</Label>
-        <Input
-          id="name"
-          name="name"
-          type="text"
-          defaultValue={bucket.name}
-          required
-        />
-      </div>
-      <div className="grid gap-y-2">
-        <Label htmlFor="totalAmount">Total Amount</Label>
-        <Input
-          id="totalAmount"
-          name="totalAmount"
-          type="number"
-          min="0"
-          step="0.01"
-          defaultValue={bucket.totalAmount}
-          required
-        />
-      </div>
-      <div className="grid gap-y-2 sm:col-span-2">
-        <Label htmlFor="description">
-          Description <small>(optional)</small>
-        </Label>
-        <Textarea
-          id="description"
-          name="description"
-          rows={5}
-          defaultValue={bucket.description ?? ""}
-        />
-      </div>
-
-      <Button type="submit" className="justify-self-end sm:col-span-2">
-        Edit Bucket
-      </Button>
-    </Form>
   );
 }
 
