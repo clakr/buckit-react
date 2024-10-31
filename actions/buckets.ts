@@ -22,12 +22,12 @@ export async function createBucket(formData: FormData) {
     })
     .returning({ id: buckets.id });
 
-  if (+totalAmount > 0) {
+  if (+totalAmount !== 0) {
     await db.insert(transactions).values({
       bucketId: createdBucket.id,
       description: "Initial Bucket Value",
       amount: totalAmount,
-      type: "inbound",
+      type: "default",
     });
   }
 

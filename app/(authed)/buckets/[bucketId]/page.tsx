@@ -16,6 +16,7 @@ import {
 import { db } from "@/db";
 import { Bucket, Transaction } from "@/db/schema";
 import { currencyFormatter } from "@/lib/utils";
+import { MinusCircle, PlusCircle } from "lucide-react";
 import Form from "next/form";
 
 type Params = Promise<{ bucketId: string }>;
@@ -72,7 +73,7 @@ function AddTransactionForm({ bucketId }: { bucketId: Bucket["id"] }) {
           required
         />
       </div>
-      <div className="grid gap-y-4">
+      <div className="grid gap-y-2">
         <Label>Transaction Type</Label>
         <RadioGroup name="type" defaultValue="inbound">
           <div className="flex items-center space-x-2">
@@ -101,6 +102,7 @@ function BucketTransactionsTable({
     <Table>
       <TableHeader>
         <TableRow>
+          <TableHead></TableHead>
           <TableHead>Description</TableHead>
           <TableHead>Amount</TableHead>
           <TableHead>Created</TableHead>
@@ -110,11 +112,22 @@ function BucketTransactionsTable({
         {transactions.length > 0 ? (
           transactions.map((transaction) => (
             <TableRow key={transaction.id}>
+              <TableCell>
+                {transaction.type === "inbound" ? (
+                  <PlusCircle className="size-4 text-green-400" />
+                ) : transaction.type === "outbound" ? (
+                  <MinusCircle className="size-4 text-red-400" />
+                ) : null}
+              </TableCell>
               <TableCell className="whitespace-nowrap">
                 {transaction.description}
               </TableCell>
               <TableCell className="font-bold">
-                {transaction.type === "inbound" ? "+" : "-"}{" "}
+                {transaction.type === "inbound"
+                  ? "+"
+                  : transaction.type === "outbound"
+                    ? "-"
+                    : null}{" "}
                 {currencyFormatter.format(+transaction.amount)}
               </TableCell>
               <TableCell>{transaction.createdAt.toLocaleString()}</TableCell>

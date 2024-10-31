@@ -34,7 +34,7 @@ export const transactions = pgTable("transactions", {
     .references(() => buckets.id, { onDelete: "cascade" })
     .notNull(),
   description: text(),
-  type: varchar({ enum: ["inbound", "outbound"] }).notNull(),
+  type: varchar({ enum: ["default", "inbound", "outbound"] }).notNull(),
   amount: decimal("amount", { precision: 9, scale: 2 }).notNull(),
   ...timestamps,
 });

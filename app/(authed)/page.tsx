@@ -19,7 +19,7 @@ import { db } from "@/db";
 import { Bucket } from "@/db/schema";
 import { currencyFormatter, truncateString } from "@/lib/utils";
 import { currentUser, User } from "@clerk/nextjs/server";
-import { Plus } from "lucide-react";
+import { MinusCircle, Plus, PlusCircle } from "lucide-react";
 import Link from "next/link";
 
 async function getData(userId: User["id"]) {
@@ -132,6 +132,7 @@ function TransactionsTable({
     <Table>
       <TableHeader>
         <TableRow>
+          <TableHead></TableHead>
           <TableHead>Description</TableHead>
           <TableHead>Amount</TableHead>
           <TableHead>Bucket</TableHead>
@@ -142,11 +143,22 @@ function TransactionsTable({
         {transactions.length > 0 ? (
           transactions.map((transaction) => (
             <TableRow key={transaction.id}>
+              <TableCell>
+                {transaction.type === "inbound" ? (
+                  <PlusCircle className="size-4 text-green-400" />
+                ) : transaction.type === "outbound" ? (
+                  <MinusCircle className="size-4 text-red-400" />
+                ) : null}
+              </TableCell>
               <TableCell className="whitespace-nowrap">
                 {transaction.description}
               </TableCell>
               <TableCell className="font-bold">
-                {transaction.type === "inbound" ? "+" : "-"}{" "}
+                {transaction.type === "inbound"
+                  ? "+"
+                  : transaction.type === "outbound"
+                    ? "-"
+                    : null}{" "}
                 {currencyFormatter.format(+transaction.amount)}
               </TableCell>
               <TableCell className="whitespace-nowrap font-medium">
